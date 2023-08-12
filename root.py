@@ -2,14 +2,16 @@ import tkinter
 import tkinter.messagebox
 import customtkinter
 from tkinter import ttk
+import requests
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
-
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
+
+        api = 'https://developer.uspto.gov/ibd-api/v1/application/publications?searchText='
 
         # configure window CustomTkinter complex_example.py
         self.title("Patent Searcher")
@@ -69,7 +71,7 @@ class App(customtkinter.CTk):
         self.combobox_1 = customtkinter.CTkComboBox(self.tabview.tab("CTkTabview"),values=["Value 1", "Value 2", "Value Long....."])
         self.combobox_1.grid(row=1, column=0, padx=0, pady=(10, 10))
         self.string_input_button = customtkinter.CTkButton(self.tabview.tab("CTkTabview"), text="Open CTkInputDialog",command=self.open_input_dialog_event)
-        
+
         self.string_input_button.grid(row=2, column=0, padx=0, pady=(10, 10))
         self.label_tab_2 = customtkinter.CTkLabel(self.tabview.tab("Tab 2"), text="CTkLabel on Tab 2")
         self.label_tab_2.grid(row=0, column=0, padx=0, pady=20)
