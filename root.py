@@ -11,7 +11,10 @@ class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
 
-        api = 'https://developer.uspto.gov/ibd-api/v1/application/publications?searchText='
+        url = 'https://developer.uspto.gov/ibd-api/v1/application/publications?searchText='
+        r = requests.get("https://developer.uspto.gov/ibd-api/v1/application/publications?searchText=device&start=0&rows=50", verify=False)
+        print(r.text)
+
 
         # configure window CustomTkinter complex_example.py
         self.title("Patent Searcher")
