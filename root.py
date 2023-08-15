@@ -11,11 +11,6 @@ class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
 
-        url = 'https://developer.uspto.gov/ibd-api/v1/application/publications?searchText='
-        r = requests.get("https://developer.uspto.gov/ibd-api/v1/application/publications?searchText=device&start=0&rows=50", verify=False)
-        print(r.text)
-
-
         # configure window CustomTkinter complex_example.py
         self.title("Patent Searcher")
         self.geometry(f"{1400}x{800}")
@@ -58,6 +53,17 @@ class App(customtkinter.CTk):
 
         self.entry = customtkinter.CTkEntry(self, placeholder_text="Search patents")
         self.entry.grid(row=0, column=1, padx=(150, 150), pady=(200, 20), sticky="ew")
+
+        url = 'https://developer.uspto.gov/ibd-api/v1/application/publications?searchText='
+
+        def pressReturn(event):
+            input = self.entry.get()
+            input = input.replace(" ", "%20")
+            print(input)
+            r = requests.get(url + input + "&rows=2", verify=False)
+            print(r.json()["results"][1]["inventorNameArrayText"][0])
+
+        self.entry.bind('<Return>', pressReturn)
         
 
         # create tabview
