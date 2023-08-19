@@ -3,8 +3,9 @@ import tkinter.messagebox
 import customtkinter
 from tkinter import ttk
 import requests
+import webbrowser
 
-customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
+customtkinter.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
 class App(customtkinter.CTk):
@@ -22,21 +23,24 @@ class App(customtkinter.CTk):
 
         # create sidebar frame with widgets
         self.sidebar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
-        self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
-        self.sidebar_frame.grid_rowconfigure(4, weight=1)
+        self.sidebar_frame.grid(row=0, column=0, rowspan=5, sticky="nsew")
+        self.sidebar_frame.grid_rowconfigure(5, weight=1)
         self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="Patent Searcher", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
 
-        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, command=self.sidebar_button_event, text= 'Search Page')
+        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, command=self.usptoWebsite, text= 'USPTO Website')
         self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
-        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, command=self.sidebar_button_event, text= 'Patent Basics')
+
+        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, command=self.patentBasics, text= 'Patent Basics')
         self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
-        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, command=self.sidebar_button_event, text= 'Patent News')
+
+        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, command=self.patentNews, text= 'Patent News')
         self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
-        
-        self.sidebar_button_4 = customtkinter.CTkButton(self.sidebar_frame, command=self.sidebar_button_event, text= 'Patent Application')
+
+        self.sidebar_button_4 = customtkinter.CTkButton(self.sidebar_frame, command=self.patentApplication, text= 'Patent Application')
         self.sidebar_button_4.grid(row=4, column=0, padx=20, pady=10)
         
+
         self.appearance_mode_label = customtkinter.CTkLabel(self.sidebar_frame, text="Appearance Mode:", anchor="w")
         self.appearance_mode_label.grid(row=5, column=0, padx=20, pady=(10, 0))
         self.appearance_mode_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["Light", "Dark", "System"],command=self.change_appearance_mode_event)
@@ -54,6 +58,7 @@ class App(customtkinter.CTk):
         self.entry = customtkinter.CTkEntry(self, placeholder_text="Search patents")
         self.entry.grid(row=0, column=1, padx=(150, 150), pady=(200, 20), sticky="ew")
 
+        #USPTO API request
         url = 'https://developer.uspto.gov/ibd-api/v1/application/publications?searchText='
 
         def pressReturn(event):
@@ -64,42 +69,27 @@ class App(customtkinter.CTk):
             print(r.json()["results"][1]["inventorNameArrayText"][0])
 
         self.entry.bind('<Return>', pressReturn)
-        
-
-        # create tabview
-        self.tabview = customtkinter.CTkTabview(self, width=140)
-        self.tabview.grid(row=1, column=0, padx=(0, 0), pady=(20, 0), sticky="nsew")
-        self.tabview.add("CTkTabview")
-        self.tabview.add("Tab 2")
-        self.tabview.tab("CTkTabview").grid_columnconfigure(0, weight=1)  
-        # configure grid of individual tabs
-        self.tabview.tab("Tab 2").grid_columnconfigure(0, weight=1)
-
-        self.optionmenu_1 = customtkinter.CTkOptionMenu(self.tabview.tab("CTkTabview"), dynamic_resizing=False, values=["Value 1", "Value 2", "Value Long Long Long"])
-        self.optionmenu_1.grid(row=0, column=0, padx=0, pady=(20, 10))
-        self.combobox_1 = customtkinter.CTkComboBox(self.tabview.tab("CTkTabview"),values=["Value 1", "Value 2", "Value Long....."])
-        self.combobox_1.grid(row=1, column=0, padx=0, pady=(10, 10))
-        self.string_input_button = customtkinter.CTkButton(self.tabview.tab("CTkTabview"), text="Open CTkInputDialog",command=self.open_input_dialog_event)
-
-        self.string_input_button.grid(row=2, column=0, padx=0, pady=(10, 10))
-        self.label_tab_2 = customtkinter.CTkLabel(self.tabview.tab("Tab 2"), text="CTkLabel on Tab 2")
-        self.label_tab_2.grid(row=0, column=0, padx=0, pady=20)
+    
 
        # create scrollable frame left
        
         self.scrollable_frame = customtkinter.CTkScrollableFrame(self)
       
-        self.scrollable_frame.grid(row=1, rowspan=2, column=1, padx=(80, 80), pady=(20, 0), sticky="nsew")
+        self.scrollable_frame.grid(row=1, rowspan=2, column=1, padx=(40, 40), pady=(20, 0), sticky="nsew")
         self.scrollable_frame.grid_columnconfigure(0, weight=1)
 
-
-        table = ttk.Treeview(self.scrollable_frame, columns = ('title', 'name', 'date', 'pages', 'number'), show = 'headings')
+        # Data Table
+        table = ttk.Treeview(self.scrollable_frame, columns = ('title', 'name', 'date', 'abstract', 'number','pdf'), show = 'headings')
         table.heading('title', text='Patent Title')
         table.heading('name', text='Inventor')
         table.heading('date', text='Date')
-        table.heading('pages', text='Pages')
+        table.heading('abstract', text='Abstract')
         table.heading('number', text='Number')
+        table.heading('pdf', text='Pdf')
         table.pack()
+
+        #for i in data:
+          #  table.insert(tk.END, f"{i['name']} - {i['value']}")
 
 
         # create scrollable frame right
@@ -120,8 +110,7 @@ class App(customtkinter.CTk):
 
         self.appearance_mode_optionemenu.set("Dark")
         self.scaling_optionemenu.set("100%")
-        self.optionmenu_1.set("CTkOptionmenu")
-        self.combobox_1.set("CTkComboBox")
+        
         """"
         self.slider_1.configure(command=self.progressbar_2.set)
         self.slider_2.configure(command=self.progressbar_3.set)
@@ -141,10 +130,19 @@ class App(customtkinter.CTk):
     def change_scaling_event(self, new_scaling: str):
         new_scaling_float = int(new_scaling.replace("%", "")) / 100
         customtkinter.set_widget_scaling(new_scaling_float)
+    
+    def usptoWebsite(self):
+            webbrowser.open_new("https://www.uspto.gov/patents")
 
-    def sidebar_button_event(self):
-        print("sidebar_button click")
+    def patentBasics(self):
+            webbrowser.open_new("https://www.uspto.gov/patents/basics/essentials")
 
+    def patentApplication(self):
+            webbrowser.open_new("https://www.uspto.gov/patents/basics/apply")
+
+    def patentNews(self):
+            webbrowser.open_new("https://www.uspto.gov/about-us/news-updates")
+        
 
 if __name__ == "__main__":
     app = App()
