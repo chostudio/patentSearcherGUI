@@ -97,12 +97,16 @@ class App(customtkinter.CTk):
             for i in range(4):
                 table.insert('', i,values=(jsonData["results"][i]["inventionTitle"], jsonData["results"][i]["inventorNameArrayText"], jsonData["results"][i]["publicationDate"], jsonData["results"][i]["abstractText"], jsonData["results"][i]["patentApplicationNumber"], jsonData["results"][i]["inventorNameArrayText"]))
 
+            # for column in table['columns']:
+            #     table.column(column, width=100)    
+
           # Make pdf a button link
 
         self.entry.bind('<Return>', pressReturn)
 
     
-        
+       
+            
         # set default values
 
         self.appearance_mode_optionemenu.set("Dark")
