@@ -4,6 +4,7 @@ import customtkinter
 from tkinter import ttk
 import requests
 import webbrowser
+import textwrap3
 
 customtkinter.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
@@ -15,7 +16,7 @@ class App(customtkinter.CTk):
         # configure window CustomTkinter complex_example.py
         self.title("Patent Searcher")
         self.geometry(f"{1400}x{800}")
-        self.minsize(1000, 600)
+        self.minsize(1400, 600)
 
         # configure grid layout (4x4)
         self.grid_columnconfigure(1, weight=1)
@@ -67,17 +68,29 @@ class App(customtkinter.CTk):
         self.scrollable_frame.grid_columnconfigure(0, weight=1)
 
         # Data Table
-        table = ttk.Treeview(self.scrollable_frame, columns = ('title', 'name', 'date', 'abstract', 'number','pdf'), show = 'headings')
+        table = ttk.Treeview(self.scrollable_frame, columns = ('title', 'name', 'date', 'abstract', 'number'), show = 'headings')
         table.heading('title', text='Patent Title')
+        table.column("name", width=150)
         table.heading('name', text='Inventor')
+        table.column("date", width=100)
         table.heading('date', text='Date')
+        table.column("abstract", width=600)
         table.heading('abstract', text='Abstract')
+        table.column("number", width=120)
         table.heading('number', text='Number')
-        table.heading('pdf', text='Pdf')
+        s = ttk.Style()
+        s.configure('Treeview', rowheight=175)
         table.pack()
+
 
         #USPTO API request
         url = 'https://developer.uspto.gov/ibd-api/v1/application/publications?searchText='
+
+        def wrap(string):
+            return '\n'.join(textwrap3.wrap(string, 25))
+        
+        def wrapAbstract(string):
+            return '\n'.join(textwrap3.wrap(string, 95))
 
         def pressReturn(event):
             input = self.entry.get()
@@ -95,7 +108,7 @@ class App(customtkinter.CTk):
             # Putting api data into table
 
             for i in range(4):
-                table.insert('', i,values=(jsonData["results"][i]["inventionTitle"], jsonData["results"][i]["inventorNameArrayText"], jsonData["results"][i]["publicationDate"], jsonData["results"][i]["abstractText"], jsonData["results"][i]["patentApplicationNumber"], jsonData["results"][i]["inventorNameArrayText"]))
+                table.insert('', i ,values=(wrap(str(jsonData["results"][i]["inventionTitle"])), wrap(str(jsonData["results"][i]["inventorNameArrayText"])), jsonData["results"][i]["publicationDate"], wrapAbstract(str(jsonData["results"][i]["abstractText"])), jsonData["results"][i]["patentApplicationNumber"]))
 
             # for column in table['columns']:
             #     table.column(column, width=100)    
